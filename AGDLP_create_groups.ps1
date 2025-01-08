@@ -22,6 +22,18 @@ foreach ($ou in $ous) {
     
         New-ADGroup -Name $dlgGroupNameRW -GroupScope Global -GroupCategory Security -Path $ou.DistinguishedName
         Write-Host "Groupe créé : $dlgGroupNameRW"
+
+        # Ajouter le groupe GGS dans les groupes DLG
+        Add-ADGroupMember -Identity $dlgGroupNameR -Members $ggsGroupName
+        Write-Host "Ajouté $ggsGroupName dans $dlgGroupNameR"
+
+        Add-ADGroupMember -Identity $dlgGroupNameRW -Members $ggsGroupName
+        Write-Host "Ajouté $ggsGroupName dans $dlgGroupNameRW"
+
+        $Users = Get-ADUser -Filter * -SearchBase $ou.DistinguishedName
+        foreach ($User in $Users){
+            Add-ADGroupMember -Identity $ggsGroupName -Members $Users.DistinguishedName
+        }
     } catch {
         Write-Host "Erreur lors de la création des groupes : $_"
     }
