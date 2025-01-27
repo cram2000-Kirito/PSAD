@@ -7,8 +7,9 @@ function Remove-Duplicates {
         [array]$InputArray
     )
     $UniqueItems = @{}
-    
+
     foreach ($item in $InputArray) {
+        # Utiliser le nom comme clé pour garder le dernier élément
         $UniqueItems[$item.Name] = $item
     }
 
