@@ -17,7 +17,7 @@ function Remove-Duplicates {
 }
 
 
-# Fonction pour obtenir l'OU à partir d'un DistinguishedName
+# Fonction pour extraire l'OU à partir d'un DistinguishedName
 function Get-OUFromDistinguishedName {
     param (
         [string]$DistinguishedName
@@ -29,23 +29,25 @@ function Get-OUFromDistinguishedName {
         return
     }
 
-    # Extraire l'OU à partir du DistinguishedName
-    try {
-        $OU = Get-ADOrganizationalUnit -Identity $DistinguishedName
-        if ($OU) {
-            Write-Host "L'OU correspondante est : $($OU.Name)"
-            Write-Host "DistinguishedName : $($OU.DistinguishedName)"
-        } else {
-            Write-Host "Aucune OU trouvée pour le DistinguishedName spécifié."
-        }
-    } catch {
-        Write-Host "Erreur : $_"
+    # Diviser le DistinguishedName en parties
+    $parts = $DistinguishedName -split ','
+
+    # Filtrer pour obtenir uniquement les parties qui commencent par "OU="
+    $OUParts = $parts | Where-Object { $_ -like 'OU=*' }
+
+    # Joindre les parties de l'OU pour former le DistinguishedName de l'OU
+    if ($OUParts) {
+        $OUResult = $OUParts -join ','
+        Write-Host "L'OU correspondante est : $OUResult"
+    } else {
+        Write-Host "Aucune OU trouvée dans le DistinguishedName spécifié."
     }
 }
 
 # Exemple d'utilisation
 # Remplacez le DistinguishedName par celui que vous souhaitez tester
-# Get-OUFromDistinguishedName -DistinguishedName "OU=NomDeVotreOU,DC=exemple,DC=com"
+# Get-OUFromDistinguishedName -DistinguishedName "CN=luc Pierre,OU=test,DC=ad,DC=lab"
+
 
 
 # Fonction pour lister les OUs, les groupes et les utilisateurs
