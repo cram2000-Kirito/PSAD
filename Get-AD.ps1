@@ -1,6 +1,20 @@
 # Importer le module Active Directory
 Import-Module ActiveDirectory
 
+# Fonction pour supprimer les doublons en gardant les derniers
+function Remove-Duplicates {
+    param (
+        [array]$InputArray
+    )
+    $UniqueItems = @{}
+    
+    foreach ($item in $InputArray) {
+        $UniqueItems[$item.Name] = $item
+    }
+
+    return $UniqueItems.Values
+}
+
 # Fonction pour lister les OUs, les groupes et les utilisateurs
 function Get-ADStructure {
     # Lister toutes les OUs
@@ -11,18 +25,20 @@ function Get-ADStructure {
         
         # Lister les groupes dans l'OU
         $Groups = Get-ADGroup -Filter * -SearchBase $OU.DistinguishedName | Select-Object Name
-        if ($Groups) {
+        $UniqueGroups = Remove-Duplicates -InputArray $Groups
+        if ($UniqueGroups) {
             Write-Host "  - Groupes :"
-            $Groups | ForEach-Object { Write-Host "    - " $_.Name }
+            $UniqueGroups | ForEach-Object { Write-Host "    - " $_.Name }
         } else {
             Write-Host "  - Aucun groupe trouvé."
         }
 
         # Lister les utilisateurs dans l'OU
         $Users = Get-ADUser -Filter * -SearchBase $OU.DistinguishedName | Select-Object Name
-        if ($Users) {
+        $UniqueUsers = Remove-Duplicates -InputArray $Users
+        if ($UniqueUsers) {
             Write-Host "  - Utilisateurs :"
-            $Users | ForEach-Object { Write-Host "    - " $_.Name }
+            $UniqueUsers | ForEach-Object { Write-Host "    - " $_.Name }
         } else {
             Write-Host "  - Aucun utilisateur trouvé."
         }
