@@ -4,18 +4,21 @@ Import-Module ActiveDirectory
 # Fonction pour extraire l'OU à partir d'un DistinguishedName
 function Get-OUFromDistinguishedName {
     param (
+        [parameter(Mandatory=$true)]
         [string]$DistinguishedName
     )
 
     # Diviser le DistinguishedName en parties
     $parts = $DistinguishedName -split ','
 
-    # Filtrer pour obtenir uniquement les parties qui commencent par "OU="
-    $OUParts = $parts | Where-Object { $_ -like 'OU=*' }
+    # Filtrer pour obtenir uniquement les parties qui commencent par "OU=" et "DC="
+    $OUParts = $parts | Where-Object {$_ -like 'OU=*'}
+    $DCParts = $parts | Where-Object {$_ -like 'DC=*'}
 
     # Joindre les parties de l'OU pour former le DistinguishedName de l'OU
     if ($OUParts) {
         $OUResult = $OUParts -join ','
+        $OUResult = $DCParts -join ','
         return $OUResult
     }
 }

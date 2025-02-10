@@ -1,6 +1,10 @@
+param (
+    [Parameter(Mandatory=$true)]
+    [string]$baseOU
+)
+
 # Importer le module Active Directory
 Import-Module ActiveDirectory
-$baseOU = "OU=techform,DC=ad,DC=lab"
 
 # Récupérer toutes les OUs
 $ous = Get-ADOrganizationalUnit -Filter * -SearchBase $baseOU
@@ -13,14 +17,14 @@ foreach ($ou in $ous) {
     $dlgGroupNameR = "DLG_${$ou.Name}_R"
     $dlgGroupNameRW = "DLG_${$ou.Name}_RW"
 
-    try {
+    try { 
         New-ADGroup -Name $ggsGroupName -GroupScope Global -GroupCategory Security -Path $ou.DistinguishedName
         Write-Host "Groupe créé : $ggsGroupName"
     
-        New-ADGroup -Name $dlgGroupNameR -GroupScope Global -GroupCategory Security -Path $ou.DistinguishedName
+        New-ADGroup -Name $dlgGroupNameR -GroupScope DomainLocal -GroupCategory Security -Path $ou.DistinguishedName
         Write-Host "Groupe créé : $dlgGroupNameR"
     
-        New-ADGroup -Name $dlgGroupNameRW -GroupScope Global -GroupCategory Security -Path $ou.DistinguishedName
+        New-ADGroup -Name $dlgGroupNameRW -GroupScope DomainLocal -GroupCategory Security -Path $ou.DistinguishedName
         Write-Host "Groupe créé : $dlgGroupNameRW"
 
         # Ajouter le groupe GGS dans les groupes DLG
