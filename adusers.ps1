@@ -34,7 +34,6 @@ foreach ($User in $ADUsers){
      $Password = $User.password
      $Firstname = $User.firstname
      $Lastname = $User.lastname
-     #$Department = $User.department
      $OU = Get-ADOrganizationalUnit -Filter 'Name -like $User.ou'
 
      #Creation de l'username de connection 
@@ -51,7 +50,7 @@ foreach ($User in $ADUsers){
      }
      else{
           #Si un utilisateur n’existe pas, creez un nouveau compte utilisateur
-          #Le compte sera cree dans I’unite d’organisation indiquee dans la variable $OU du fichier CSV ; n’oubliez pas de changer le nom de domaine dans la variable « -UserPrincipalName ».
+          #Le compte sera cree dans l’unite d’organisation indiquee dans la variable $OU du fichier CSV ; n’oubliez pas de changer le nom de domaine dans la variable « -UserPrincipalName ».
           New-ADUser `
                -SamAccountName $Username `
                -UserPrincipalName "$Username@$DomainName" `
